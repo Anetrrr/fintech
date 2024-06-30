@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 public class CustomerMapper {
 
-    private static CustomerDto mapToDto(Customer customer, CustomerDto customerDto){
+    public static CustomerDto mapToDto(Customer customer, CustomerDto customerDto){
 
         customerDto.setName(customer.getName());
         customerDto.setEmail(customer.getEmail());
