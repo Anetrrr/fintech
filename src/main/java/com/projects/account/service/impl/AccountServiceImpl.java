@@ -19,12 +19,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
+
 public class AccountServiceImpl implements IAccountsService {
 
     private final AccountsRepository accountsRepository;
@@ -103,6 +106,34 @@ public class AccountServiceImpl implements IAccountsService {
     }
 
     @Override
+    public List<CustomerDto> fetchAllAccounts() {
+        // Fetch all customers
+        List<Customer> customers = customerRepository.findAll();
+
+        // Create a list to hold the resulting CustomerDto objects
+        List<CustomerDto> customerDtos = new ArrayList<>();
+
+        // Loop through each customer and fetch their associated account
+        for (Customer customer : customers) {
+            // Fetch the associated account
+            Accounts accounts = accountsRepository.findByCustomerId(customer.getCustomerId()).orElseThrow(
+                    () -> new ResourceNotFoundException("Account", "customerId", customer.getCustomerId().toString())
+            );
+
+            // Map entities to DTOs
+            CustomerDto customerDto = CustomerMapper.mapToDto(customer, new CustomerDto());
+            customerDto.setAccountsDto(AccountMapper.mapToDto(accounts, new AccountsDto()));
+
+            // Add the CustomerDto to the list
+            customerDtos.add(customerDto);
+        }
+
+        // Return the list of CustomerDto objects
+        return customerDtos;
+    }
+
+
+    @Override
     public boolean updateAccount(CustomerDto customerDto) {
         boolean isUpdated = false;
         AccountsDto accountsDto = customerDto.getAccountsDto();
@@ -125,5 +156,24 @@ public class AccountServiceImpl implements IAccountsService {
         return isUpdated;
     }
 
+    @Override
+    public boolean deleteAccount(String mobileNumber) {
 
-}
+        Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
+
+        );
+
+
+        customerRepository.deleteById(customer.getCustomerId());
+        accountsRepository.deleteByCustomerId(customer.getCustomerId());
+
+        return true;
+
+    }
+
+
+    }
+
+
+
