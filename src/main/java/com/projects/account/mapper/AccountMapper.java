@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class AccountMapper {
 
-
+// mapping accounts to accountsDto
     public static AccountsDto mapToDto(Accounts accounts, AccountsDto accountsDto){
 
         accountsDto.setAccountNumber(accounts.getAccountNumber());
@@ -20,7 +20,7 @@ public class AccountMapper {
         return accountsDto;
 
     }
-
+// mapping accountsDto to account.
     public static Accounts maptoAccounts(AccountsDto accountsDto, Accounts accounts){
 
         accounts.setAccountNumber(accountsDto.getAccountNumber());
